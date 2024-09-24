@@ -3,29 +3,20 @@
 import pygame
 
 
-from game_state import GameState
-from graphics import Graphics
-from audio import Audio
 from inputs import KeyboardState
 
-
-def check_invariants(game: GameState, graphics: Graphics):
-    """Makes sure that certain conditions are true, so that the game is consistent"""
-    assert game.settings.graphics_settings == graphics.graphics_settings
-    if game.settings_state != None:
-        assert game.settings == game.settings_state.settings
+FPS = 60
 
 
 def GameLoop():
     """The main loop of the game. Initializes classes and repeatedly updates them"""
     game = GameState()
     clock = pygame.time.Clock()
-    audio = Audio()
     graphics = Graphics(game.settings.graphics_settings)
     keyboard_state = KeyboardState()
 
     while not game.game_exit:
-        clock.tick(game.settings.fps)
+        clock.tick(FPS)
 
         total_delta_t = clock.get_time()
 
@@ -33,11 +24,9 @@ def GameLoop():
             total_delta_t, keyboard_state
         )
 
-        audio.run(audio_instructions)
         graphics.render(graphics_instructions)
 
         keyboard_state.handle_pygame_events()
-        check_invariants(game, graphics)
 
 
 def main():
