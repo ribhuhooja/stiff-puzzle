@@ -8,25 +8,44 @@ from inputs import KeyboardState
 FPS = 60
 
 
+def render(screen, block):
+    pygame.draw.rect(screen, (0, 0, 0), (0, 0, 800, 600))
+    pygame.draw.rect(screen, (255, 255, 255), block)
+    pygame.display.update()
+
+
 def GameLoop():
     """The main loop of the game. Initializes classes and repeatedly updates them"""
-    game = GameState()
     clock = pygame.time.Clock()
-    graphics = Graphics(game.settings.graphics_settings)
+    screen = pygame.display.set_mode((800, 600))
     keyboard_state = KeyboardState()
 
-    while not game.game_exit:
+    block_x = 400
+    block_y = 500
+
+    block_vx = 0  # velocity
+    block_ax = 0  # acceleration
+
+    while not keyboard_state.quit:
         clock.tick(FPS)
 
         total_delta_t = clock.get_time()
 
-        audio_instructions, graphics_instructions = game.update(
-            total_delta_t, keyboard_state
-        )
-
-        graphics.render(graphics_instructions)
+        render(screen, (block_x, block_y, 50, 25))
 
         keyboard_state.handle_pygame_events()
+
+        if pygame.K_d in keyboard_state.get_keys():
+            block_ax = 0.0001
+        elif pygame.K_a in keyboard_state.get_keys():
+            block_ax = -0.0001
+        else:
+            block_ax = -1 * block_vx  # drag
+
+        block_vx += block_ax * total_delta_t
+        block_x += block_vx * total_delta_t
+
+        print(block_vx)
 
 
 def main():
